@@ -1,17 +1,22 @@
-import { Controller, Post, Get, Param, Body, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiBody, ApiParam } from '@nestjs/swagger';
 import { MessagesService } from './messages.service';
+import { CreateMessageDto } from './dto/create-message.dto';
 
+@ApiTags('Messages')
 @Controller('messages')
 export class MessagesController {
-  constructor(private messagesService: MessagesService) {}
+  constructor(private readonly messagesService: MessagesService) {}
 
   @Post('send')
-  async sendMessage(@Body() body: { chatId: number; senderId: number; mediaType: 'text' | 'file'; content: any }) {
-    return this.messagesService.sendMessage(body.chatId, body.senderId, body.mediaType, body.content);
+  @ApiBody({ type: CreateMessageDto })
+  async sendMessage(@Body() createMessageDto: CreateMessageDto) {
+    return this.messagesService.createMessage(createMessageDto);
   }
 
-  @Get(':chatId')
-  async getMessages(@Param('chatId', ParseIntPipe) chatId: number) {
-    return this.messagesService.getMessages(chatId);
+  @Get('chat/:chatId')
+  @ApiParam({ name: 'chatId', description: 'ID of the chat' })
+  async getMessagesByChat(@Param('chatId', ParseIntPipe) chatId: string) {
+    return this.messagesService.getMessagesByChat(chatId);
   }
 }

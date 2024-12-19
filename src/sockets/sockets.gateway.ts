@@ -23,14 +23,14 @@ export class SocketsGateway implements OnGatewayConnection, OnGatewayDisconnect 
   }
 
   @SubscribeMessage('joinChat')
-  handleJoinChat(client: Socket, data: { chatId: number }) {
+  handleJoinChat(client: Socket, data: { chatId: string }) {
     const user = (client as any).user;
     console.log(`User ${user.username} joined chat_${data.chatId}`);
     client.join(`chat_${data.chatId}`);
   }
 
   @SubscribeMessage('sendMessage')
-  handleSendMessage(client: Socket, data: { chatId: number; content: any; mediaType: 'text' | 'file' }) {
+  handleSendMessage(client: Socket, data: { chatId: string; content: any; mediaType: 'text' | 'file' }) {
     const user = (client as any).user;
     console.log(`User ${user.username} sent a message to chat_${data.chatId}`);
     this.server.to(`chat_${data.chatId}`).emit('newMessage', {

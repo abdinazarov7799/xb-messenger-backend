@@ -8,12 +8,15 @@ export class UsersService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
   async create(user: any): Promise<User> {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(user.password, 10);
     return this.userModel.create(user);
   }
 
   async findOne(username: string): Promise<User> {
     return this.userModel.findOne({ where: { username } });
+  }
+
+  async findById(id: string): Promise<User> {
+    return this.userModel.findOne({ where: { id } });
   }
 }

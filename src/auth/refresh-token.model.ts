@@ -5,9 +5,12 @@ import { User } from '../users/user.model';
   tableName: 'refresh_tokens',
 })
 export class RefreshToken extends Model<RefreshToken> {
+  @Column({ primaryKey: true, autoIncrement: true })
+  id: number;
+
   @ForeignKey(() => User)
-  @Column
-  userId: number;
+  @Column({ type: DataType.UUID, allowNull: false })
+  userId: string;
 
   @Column(DataType.STRING)
   token: string;

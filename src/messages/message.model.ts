@@ -1,4 +1,11 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  ForeignKey,
+  BelongsTo, Default
+} from "sequelize-typescript";
 import { Chat } from '../chats/chat.model';
 import { User } from '../users/user.model';
 
@@ -6,13 +13,17 @@ import { User } from '../users/user.model';
   tableName: 'messages',
 })
 export class Message extends Model<Message> {
+  @Default(DataType.UUIDV4)
+  @Column({ primaryKey: true, type: DataType.UUID })
+  id: string;
+
   @ForeignKey(() => Chat)
-  @Column
-  chatId: number;
+  @Column({ type: DataType.UUID, allowNull: false })
+  chatId: string;
 
   @ForeignKey(() => User)
-  @Column
-  senderId: number;
+  @Column({ type: DataType.UUID, allowNull: false })
+  senderId: string;
 
   @Column({
     type: DataType.ENUM('text', 'file'),

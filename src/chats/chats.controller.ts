@@ -1,20 +1,27 @@
 import { Controller, Post, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ChatsService } from './chats.service';
+import { CreateChatDto } from './dto/create-chat.dto';
+import { AddParticipantDto } from './dto/add-participant.dto';
 
+@ApiTags('Chats')
 @Controller('chats')
 export class ChatsController {
-  constructor(private chatsService: ChatsService) {}
+  constructor(private readonly chatsService: ChatsService) {}
 
   @Post('create')
-  async createChat(@Body() body: { userId: number; type: 'private' | 'group'; name?: string }) {
-    return this.chatsService.createChat(body.userId, body.type, body.name);
+  @ApiBody({ type: CreateChatDto })
+  async createChat(@Body() createChatDto: CreateChatDto) {
+    return this.chatsService.createChat(createChatDto);
   }
 
   @Post(':id/add-participant')
+  @ApiParam({ name: 'id', description: 'ID of the chat' })
+  @ApiBody({ type: AddParticipantDto })
   async addParticipant(
-    @Param('id', ParseIntPipe) chatId: number,
-    @Body() body: { userId: number; addedBy: number },
+    @Param('id', ParseIntPipe) chatId: string,
+    @Body() addParticipantDto: AddParticipantDto,
   ) {
-    return this.chatsService.addParticipant(chatId, body.userId, body.addedBy);
+    return this.chatsService.addParticipant(chatId, addParticipantDto);
   }
 }

@@ -1,4 +1,4 @@
-import { Table, Column, Model, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, ForeignKey, DataType } from "sequelize-typescript";
 import { Chat } from './chat.model';
 import { User } from '../users/user.model';
 
@@ -7,12 +7,12 @@ import { User } from '../users/user.model';
 })
 export class ChatParticipant extends Model<ChatParticipant> {
   @ForeignKey(() => Chat)
-  @Column
-  chatId: number;
+  @Column({ type: DataType.UUID, allowNull: false })
+  chatId: string;
 
   @ForeignKey(() => User)
-  @Column
-  userId: number;
+  @Column({ type: DataType.UUID, allowNull: false })
+  userId: string;
 
   @Column({
     type: 'boolean',

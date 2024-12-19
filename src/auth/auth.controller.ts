@@ -1,8 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request } from "@nestjs/common";
 import { AuthService } from './auth.service';
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
 import { LoginDto } from "./dto/login.dto";
 import { Public } from "./public.decorator";
+import { RegisterDto } from "./dto/register.dto";
+import { AuthGuard } from "./auth.guard";
+import { Request as ExpressRequest } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -21,8 +24,22 @@ export class AuthController {
   }
 
   @Public()
+  @Post('register')
+  @ApiBody({ type: RegisterDto })
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
+  }
+
+  @Public()
   @Post('refresh')
   async refresh(@Body() req: { refresh_token: string }) {
     return this.authService.refresh(req.refresh_token);
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Get('me')
+  async getMe(@Request() req: ExpressRequest) {
+    return this.authService.getMe(req.user);
   }
 }
