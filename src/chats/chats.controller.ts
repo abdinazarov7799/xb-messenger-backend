@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, Param, ParseIntPipe, Request } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ChatsService } from './chats.service';
 import { CreateChatDto } from './dto/create-chat.dto';
@@ -21,7 +21,9 @@ export class ChatsController {
   async addParticipant(
     @Param('id', ParseIntPipe) chatId: string,
     @Body() addParticipantDto: AddParticipantDto,
+    @Request() req: any,
   ) {
-    return this.chatsService.addParticipant(chatId, addParticipantDto);
+    const addedBy = req.user.userId;
+    return this.chatsService.addParticipant(chatId, addParticipantDto.userId, addedBy);
   }
 }
